@@ -195,7 +195,7 @@ void DetectorConstruction::ConstructSDandField()
     G4VPrimitiveScorer* primitiv2 = new PSEquivalentDose3D("EqDose", 3, 3, 3);
     mfd_box->RegisterPrimitive(primitiv2);
 
-    SetSensitiveDetector("lTestBox", mfd_box);
+    SetSensitiveDetector("RepZ", mfd_box);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
