@@ -28,6 +28,8 @@ public:
     virtual void ConstructSDandField();
 
     G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
+    G4VPhysicalVolume* GetPhysicalVolume() const { return fphysWorld; }
+
     G4double  GetTestDx() const { return test_dxxy/2;}
 
 private:
@@ -35,6 +37,8 @@ private:
 
     G4bool  fCheckOverlaps;
     G4double test_dxxy;
+
+    G4VPhysicalVolume* fphysWorld;
 
     G4LogicalVolume*  fScoringVolume;
 
