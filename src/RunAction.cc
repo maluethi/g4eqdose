@@ -28,6 +28,9 @@
 /// \brief Implementation of the B1RunAction class
 
 #include <Run.hh>
+#include <G4ScoringManager.hh>
+#include <G4ScoringBox.hh>
+#include <PSEquivalentDose3D.hh>
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
@@ -65,6 +68,11 @@ RunAction::RunAction()
 
   fSDName.push_back(G4String("TestBox"));
 
+  fManager = G4ScoringManager::GetScoringManagerIfExist();
+
+  G4cout << "MANAGER" << G4endl;
+  fManager->Dump();
+
 }
 
 
@@ -78,11 +86,41 @@ G4Run* RunAction::GenerateRun()
 void RunAction::BeginOfRunAction(const G4Run*)
 { 
   // inform the runManager to save random number seed
-  G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+      G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-  // reset accumulables to their initial values
-  G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-  accumulableManager->Reset();
+      // reset accumulables to their initial values
+      G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+      accumulableManager->Reset();
+
+    const DetectorConstruction* detCons
+            = static_cast<const DetectorConstruction*>
+            (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+
+    G4int nSegment[3];
+    nSegment[0] = 2;
+    nSegment[1] = 2;
+    nSegment[2] = 2;
+
+    G4double mSize[3];
+    mSize[0] = 5.;
+    mSize[1] = 5.;
+    mSize[2] = 5.;
+
+    G4VScoringMesh* mesh = new G4ScoringBox("TestBoxPS");
+
+    mesh->SetNumberOfSegments(nSegment);
+    mesh->SetSize(mSize);
+    mesh->Construct(detCons->);
+
+    PSEquivalentDose3D* ps = new PSEquivalentDose3D("EqDose", nSegment[0], nSegment[1], nSegment[2]);
+
+    mesh->SetPrimitiveScorer(ps);
+
+    fManager->RegisterScoringMesh(mesh);
+
+    G4cout << "MANAGER" << G4endl;
+    fManager->Dump();
+    fManager->List();
 
 }
 
@@ -103,6 +141,9 @@ void RunAction::EndOfRunAction(const G4Run* run)
     for (itr = totEdep->GetMap()->begin(); itr != totEdep->GetMap()->end(); itr++) {
         G4cout << "dose " << itr->first << " " << " " << *itr->second << G4endl;
     }
+
+    G4cout << "MANAGER" << G4endl;
+    fManager->Dump();
 
   // Compute dose = total energy deposit in a run and its variance
   //

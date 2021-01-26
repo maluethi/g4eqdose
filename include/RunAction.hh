@@ -34,6 +34,7 @@
 #include "G4UserRunAction.hh"
 #include "G4Accumulable.hh"
 #include "globals.hh"
+#include "G4ScoringManager.hh"
 
 class G4Run;
 
@@ -60,6 +61,8 @@ class RunAction : public G4UserRunAction
     G4Accumulable<G4double> fEqDose2;
 
     std::vector<G4String> fSDName;
+
+    G4ScoringManager* fManager;
 
 };
 
