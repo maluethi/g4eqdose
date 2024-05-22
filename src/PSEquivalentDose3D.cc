@@ -8,6 +8,7 @@ PSEquivalentDose3D::PSEquivalentDose3D(G4String name, G4int nx, G4int ny, G4int 
     : PSEquivalntDose(name),fNx(nx),fNy(ny),fNz(nz) {
 
 }
+PSEquivalentDose3D::~PSEquivalentDose3D() {}
 
 G4int PSEquivalentDose3D::GetIndex(G4Step * aStep) {
     const G4VTouchable* touchable = aStep->GetPreStepPoint()->GetTouchable();
