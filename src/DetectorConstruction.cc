@@ -145,9 +145,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
     // Replicas & such things
-    G4int nxCells = 3;
-    G4int nyCells = 3;
-    G4int nzCells = 3;
+    G4int nxCells = 2;
+    G4int nyCells = 2;
+    G4int nzCells = 2;
 
     G4ThreeVector sensSize;
     sensSize.setX(boxSize.x() / (G4double) nxCells);
@@ -192,7 +192,7 @@ void DetectorConstruction::ConstructSDandField()
     //  
     G4MultiFunctionalDetector* mfd_box = new G4MultiFunctionalDetector("TestBox");
     G4SDManager::GetSDMpointer()->AddNewDetector(mfd_box);
-    G4VPrimitiveScorer* primitiv2 = new PSEquivalentDose3D("EqDose", 3, 3, 3);
+    G4VPrimitiveScorer* primitiv2 = new PSEquivalentDose3D("EqDose", 2, 2, 2);
     mfd_box->RegisterPrimitive(primitiv2);
 
     SetSensitiveDetector("RepZ", mfd_box);

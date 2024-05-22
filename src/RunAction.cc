@@ -27,6 +27,7 @@
 /// \file B1RunAction.cc
 /// \brief Implementation of the B1RunAction class
 
+#include <Run.hh>
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
@@ -44,7 +45,7 @@ RunAction::RunAction()
 : G4UserRunAction(),
   fEqDose(0.),
   fEqDose2(0.)
-{ 
+  {
   auto sievert = joule / kilogram;
 
   const G4double milliseivert = 1.e-3 * sievert;
@@ -61,13 +62,18 @@ RunAction::RunAction()
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
   accumulableManager->RegisterAccumulable(fEqDose);
   accumulableManager->RegisterAccumulable(fEqDose2);
-  
+
+  fSDName.push_back(G4String("TestBox"));
+
 }
 
 
 RunAction::~RunAction()
 {}
-
+G4Run* RunAction::GenerateRun()
+{
+    return new Run(fSDName);
+}
 
 void RunAction::BeginOfRunAction(const G4Run*)
 { 
@@ -89,6 +95,14 @@ void RunAction::EndOfRunAction(const G4Run* run)
   // Merge accumulables 
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
   accumulableManager->Merge();
+
+  auto* tRun = (Run*) run;  // Get custom run object
+
+    G4THitsMap<G4double>* totEdep  = tRun->GetHitsMap("TestBox/EqDose");
+    std::map<G4int,G4double*>::iterator itr;
+    for (itr = totEdep->GetMap()->begin(); itr != totEdep->GetMap()->end(); itr++) {
+        G4cout << "dose " << itr->first << " " << " " << *itr->second << G4endl;
+    }
 
   // Compute dose = total energy deposit in a run and its variance
   //
