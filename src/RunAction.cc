@@ -30,7 +30,6 @@
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
-// #include "B1Run.hh"
 
 #include "G4RunManager.hh"
 #include "G4Run.hh"
@@ -52,7 +51,7 @@ RunAction::RunAction()
   const G4double microsievert = 1.e-6 * sievert;
   const G4double nanosievert  = 1.e-9 * sievert;
   const G4double picosievert  = 1.e-12 * sievert;
-   
+
   new G4UnitDefinition("milliseivert", "mSv" , "EqDose", milliseivert);
   new G4UnitDefinition("microsievert", "uSv" , "EqDose", microsievert);
   new G4UnitDefinition("nanosievert" , "nSv"  , "EqDose", nanosievert);
