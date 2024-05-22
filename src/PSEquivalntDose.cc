@@ -79,8 +79,8 @@ G4bool PSEquivalntDose::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     G4int index = GetIndex(aStep);
     EvtMap->add(index, CellEqDose);
 
-    //G4cout << "PDG:" << aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding()
-    // << " EqDose: " << CellEqDose << " ENE: " << pre_step->GetKineticEnergy() << " C: " << coeff << " F: " << flux << G4endl;
+    G4cout << "idx: " << index << " PDG:" << aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding()
+     << " EqDose: " << CellEqDose << " ENE: " << pre_step->GetKineticEnergy() << " C: " << coeff << " F: " << flux << G4endl;
 
     return TRUE;
 
