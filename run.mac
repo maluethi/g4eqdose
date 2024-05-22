@@ -19,4 +19,4 @@
 /user/beam/energy 10 MeV
 /user/beam/particle gamma
 
-/run/beamOn 500
+/run/beamOn 1

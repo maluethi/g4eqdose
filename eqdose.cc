@@ -20,6 +20,7 @@
 #include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
 
+#include "G4ScoringManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -43,7 +44,7 @@ int main(int argc,char** argv)
 #else
     G4RunManager* runManager = new G4RunManager;
 #endif
-
+    G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();
     // Set mandatory initialization classes
     //
     runManager->SetUserInitialization(new DetectorConstruction);
