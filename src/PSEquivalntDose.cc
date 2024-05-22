@@ -29,9 +29,6 @@ void PSEquivalntDose::Initialize(G4HCofThisEvent* HCE) {
     EvtMap = new G4THitsMap<G4double>(detector->GetName(),GetName());
     if (HCID < 0) HCID = GetCollectionID(0);
     HCE->AddHitsCollection(HCID, EvtMap);
-
-
-
 }
 
 void PSEquivalntDose::EndOfEvent(G4HCofThisEvent*) {}
@@ -62,7 +59,7 @@ G4bool PSEquivalntDose::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
             coeff = fNeutronCoeff.GetCoefficient(energy); break;
         default:
             G4ExceptionDescription ED;
-            ED << "No conversion coefficients available for " << pid << "(" << name << ")" << G4endl;
+            ED << "No conversion coefficients available for " << pid << "(" << name << ")" << "energy:" << energy << G4endl;
             G4Exception("PSEquivalentDose::ProcessHits","Whoopsa",JustWarning,ED);
     }
 
