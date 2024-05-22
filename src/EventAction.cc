@@ -66,6 +66,10 @@ void EventAction::EndOfEventAction(const G4Event* evt)
         fCollID_eqdose = SDMan->GetCollectionID("TestBox/EqDose");
     }
 
+    auto hc = GetHitsCollection(fCollID_eqdose, evt);
+
+    hc->PrintAllHits();
+
     G4THitsMap<G4double>* evtMap =
             (G4THitsMap<G4double>*)(HCE->GetHC(fCollID_eqdose));
 
@@ -76,4 +80,20 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     }
     if (eq_dose > 0.) fRunAction->AddEqDose(eq_dose);
 
+}
+
+G4THitsMap<G4double>* EventAction::GetHitsCollection(G4int hcID, const G4Event* event) const
+{
+    auto hitsCollection
+            = static_cast<G4THitsMap<G4double>*>(
+                    event->GetHCofThisEvent()->GetHC(hcID));
+
+    if ( ! hitsCollection ) {
+        G4ExceptionDescription msg;
+        msg << "Cannot access hitsCollection ID " << hcID;
+        G4Exception("B4dEventAction::GetHitsCollection()",
+                    "MyCode0003", FatalException, msg);
+    }
+
+    return hitsCollection;
 }
