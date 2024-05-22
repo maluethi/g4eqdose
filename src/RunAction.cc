@@ -110,7 +110,7 @@ void RunAction::BeginOfRunAction(const G4Run*)
 
     mesh->SetNumberOfSegments(nSegment);
     mesh->SetSize(mSize);
-    mesh->Construct(detCons->);
+    mesh->Construct(detCons->GetPhysicalVolume());
 
     PSEquivalentDose3D* ps = new PSEquivalentDose3D("EqDose", nSegment[0], nSegment[1], nSegment[2]);
 

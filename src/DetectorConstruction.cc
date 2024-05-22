@@ -178,6 +178,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     //always return the physical World
     //
+
+    fphysWorld = physWorld;
+
     return physWorld;
 }
 
