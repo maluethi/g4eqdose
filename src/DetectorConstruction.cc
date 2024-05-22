@@ -30,6 +30,7 @@
 /// \file DetectorConstruction.cc
 /// \brief Implementation of the DetectorConstruction class
 
+#include <G4PVReplica.hh>
 #include "DetectorConstruction.hh"
 
 #include "G4NistManager.hh"
@@ -79,7 +80,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
     G4NistManager* nist = G4NistManager::Instance();
-    G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
+    G4Material* test_mat = nist->FindOrBuildMaterial("G4_CONCRETE");
     G4Material* galactic = nist->FindOrBuildMaterial("G4_Galactic");
 
 
@@ -95,7 +96,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4LogicalVolume* logicWorld =
             new G4LogicalVolume(solidWorld,          //its solid
-                                air,         //its material
+                                test_mat,         //its material
                                 "World");            //its name
 
     G4VPhysicalVolume* physWorld =
@@ -110,16 +111,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
 
-    //
-    // patient
-    //
+    // Box Size:
+    G4ThreeVector boxSize;
+    boxSize.setX(test_dxxy);
+    boxSize.setY(test_dxxy);
+    boxSize.setZ(test_dxxy);
+
 
     auto* TestBox =
-            new G4Box("TestBox", test_dxxy, test_dxxy, test_dxxy);
+            new G4Box("TestBox", boxSize.x() / 2, boxSize.y() / 2, boxSize.z() / 2);
 
     G4LogicalVolume* lTestBox =
             new G4LogicalVolume(TestBox,        //its solid
-                                air,         //its material
+                                test_mat,         //its material
                                 "TestBox");        //its name
 
     //
@@ -138,7 +142,39 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     // Print materials
     G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
-    fScoringVolume = lTestBox;
+
+
+    // Replicas & such things
+    G4int nxCells = 3;
+    G4int nyCells = 3;
+    G4int nzCells = 3;
+
+    G4ThreeVector sensSize;
+    sensSize.setX(boxSize.x() / (G4double) nxCells);
+    sensSize.setY(boxSize.y() / (G4double) nyCells);
+    sensSize.setZ(boxSize.z() / (G4double) nzCells);
+
+    // Replication of Water Phantom Volume.
+    // Y Slice
+    G4String yRepName("RepY");
+    G4VSolid* solYRep = new G4Box(yRepName, boxSize.x()/2.,sensSize.y()/2.,boxSize.z()/2.);
+    G4LogicalVolume* logYRep = new G4LogicalVolume(solYRep, test_mat, yRepName);
+
+    new G4PVReplica(yRepName,logYRep,lTestBox,kYAxis, nyCells, sensSize.y());
+
+    // X Slice
+    G4String xRepName("RepX");
+    G4VSolid* solXRep = new G4Box(xRepName,sensSize.x()/2.,sensSize.y()/2.,boxSize.z()/2.);
+    G4LogicalVolume* logXRep = new G4LogicalVolume(solXRep,test_mat,xRepName);
+    new G4PVReplica(xRepName, logXRep, logYRep,kXAxis, nxCells, sensSize.x());
+
+    // Z Slice
+    G4String zRepName("RepZ");
+    G4VSolid* solZRep = new G4Box(xRepName,sensSize.x()/2.,sensSize.y()/2.,sensSize.z()/2.);
+    G4LogicalVolume* logZRep = new G4LogicalVolume(solZRep,test_mat,xRepName);
+    new G4PVReplica(xRepName, logZRep, logXRep,kZAxis, nzCells, sensSize.z());
+
+    fScoringVolume = logZRep;
 
     //always return the physical World
     //
