@@ -47,7 +47,7 @@
 #include "G4VisAttributes.hh"
 #include "G4SystemOfUnits.hh"
 
-#include "PSEquivalntDose.hh"
+#include "PSEquivalentDose3D.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -124,7 +124,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4LogicalVolume* lTestBox =
             new G4LogicalVolume(TestBox,        //its solid
                                 test_mat,         //its material
-                                "TestBox");        //its name
+                                "lTestBox");        //its name
 
     //
     // place patient in world
@@ -170,11 +170,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     // Z Slice
     G4String zRepName("RepZ");
-    G4VSolid* solZRep = new G4Box(xRepName,sensSize.x()/2.,sensSize.y()/2.,sensSize.z()/2.);
-    G4LogicalVolume* logZRep = new G4LogicalVolume(solZRep,test_mat,xRepName);
-    new G4PVReplica(xRepName, logZRep, logXRep,kZAxis, nzCells, sensSize.z());
+    G4VSolid* solZRep = new G4Box(zRepName,sensSize.x()/2.,sensSize.y()/2.,sensSize.z()/2.);
+    G4LogicalVolume* logZRep = new G4LogicalVolume(solZRep,test_mat,zRepName);
+    new G4PVReplica(zRepName, logZRep, logXRep,kZAxis, nzCells, sensSize.z());
 
-    fScoringVolume = logZRep;
+    fScoringVolume = lTestBox;
 
     //always return the physical World
     //
@@ -185,15 +185,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 void DetectorConstruction::ConstructSDandField()
 {
-    G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+    auto sd_manager = G4SDManager::GetSDMpointer();
+    sd_manager->SetVerboseLevel(1);
 
     // declare patient as a MultiFunctionalDetector scorer
     //  
-    G4MultiFunctionalDetector* patient = new G4MultiFunctionalDetector("TestBox");
-    G4SDManager::GetSDMpointer()->AddNewDetector(patient);
-    G4VPrimitiveScorer* primitiv2 = new PSEquivalntDose("EqDose");
-    patient->RegisterPrimitive(primitiv2);
-    SetSensitiveDetector("TestBox",patient);
+    G4MultiFunctionalDetector* mfd_box = new G4MultiFunctionalDetector("TestBox");
+    G4SDManager::GetSDMpointer()->AddNewDetector(mfd_box);
+    G4VPrimitiveScorer* primitiv2 = new PSEquivalentDose3D("EqDose", 3, 3, 3);
+    mfd_box->RegisterPrimitive(primitiv2);
+
+    SetSensitiveDetector("lTestBox", mfd_box);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
