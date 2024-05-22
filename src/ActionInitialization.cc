@@ -29,7 +29,6 @@
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
-#include "SteppingAction.hh"
 
 
 
@@ -60,5 +59,4 @@ void ActionInitialization::Build() const
   EventAction* eventAction = new EventAction(runAction);
   SetUserAction(eventAction);
   
-  SetUserAction(new SteppingAction(eventAction));
-}  
+}
