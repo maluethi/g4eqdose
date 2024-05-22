@@ -79,7 +79,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
     G4NistManager* nist = G4NistManager::Instance();
-    G4Material* air = nist->FindOrBuildMaterial("G4_CONCRETE");
+    G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
     G4Material* galactic = nist->FindOrBuildMaterial("G4_Galactic");
 
 
