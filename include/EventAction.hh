@@ -27,6 +27,7 @@
 #ifndef EventAction_h
 #define EventAction_h 1
 
+#include <G4THitsMap.hh>
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 
@@ -42,6 +43,7 @@ class EventAction : public G4UserEventAction
     virtual void EndOfEventAction(const G4Event* event);
 
   private:
+    G4THitsMap<G4double>* GetHitsCollection(G4int hcID, const G4Event* event) const;
     RunAction* fRunAction;
 
     G4int fCollID_eqdose;
