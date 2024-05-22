@@ -18,11 +18,15 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 add_executable(eqdose eqdose.cc ${sources} ${headers})
 target_link_libraries(eqdose ${Geant4_LIBRARIES})
 
+add_library(eqdose_lib STATIC ${sources})
+
 set(EXAMPLEB3_SCRIPTS
         run.mac
         vis.mac
         init_vis.mac
         )
+
+file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(_script ${EXAMPLEB3_SCRIPTS})
     configure_file(
@@ -32,3 +36,4 @@ foreach(_script ${EXAMPLEB3_SCRIPTS})
     )
 endforeach()
 
+add_subdirectory(tests)
