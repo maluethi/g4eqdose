@@ -16,7 +16,7 @@
 /run/verbose 1
 
 
-/user/beam/energy 20 MeV
+/user/beam/energy 10 MeV
 /user/beam/particle gamma
 
-/run/beamOn 100000
+/run/beamOn 500
