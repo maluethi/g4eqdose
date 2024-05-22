@@ -35,6 +35,10 @@ private:
     G4bool  weighted;
 
     ConvCoeff fGammaCoeff;
+    ConvCoeff fElectronCoeff;
+    ConvCoeff fPositronCoeff;
+    ConvCoeff fProtonCoeff;
+    ConvCoeff fNeutronCoeff;
 
 };
 
