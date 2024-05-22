@@ -43,29 +43,26 @@
 
 RunAction::RunAction()
 : G4UserRunAction(),
-  fEdep(0.),
-  fEdep2(0.)
+  fEqDose(0.),
+  fEqDose2(0.)
 { 
-  // add new units for dose
-  // 
-  const G4double milligray = 1.e-3*gray;
-  const G4double microgray = 1.e-6*gray;
-  const G4double nanogray  = 1.e-9*gray;  
-  const G4double picogray  = 1.e-12*gray;
+  auto sievert = joule / kilogram;
+
+  const G4double milliseivert = 1.e-3 * sievert;
+  const G4double microsievert = 1.e-6 * sievert;
+  const G4double nanosievert  = 1.e-9 * sievert;
+  const G4double picosievert  = 1.e-12 * sievert;
    
-  new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
-  new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
-  new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
-  new G4UnitDefinition("picogray" , "picoGy"  , "Dose", picogray); 
+  new G4UnitDefinition("milliseivert", "mSv" , "EqDose", milliseivert);
+  new G4UnitDefinition("microsievert", "uSv" , "EqDose", microsievert);
+  new G4UnitDefinition("nanosievert" , "nSv"  , "EqDose", nanosievert);
+  new G4UnitDefinition("picosievert" , "pSv"  , "EqDose", picosievert);
 
   // Register accumulable to the accumulable manager
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-  accumulableManager->RegisterAccumulable(fEdep);
-  accumulableManager->RegisterAccumulable(fEdep2);
-
-  G4int total_events = G4RunManager::GetRunManager()->GetNumberOfEventsToBeProcessed();
-  fPrintoutFraction = G4int(0.1 * total_events);
-
+  accumulableManager->RegisterAccumulable(fEqDose);
+  accumulableManager->RegisterAccumulable(fEqDose2);
+  
 }
 
 
@@ -96,22 +93,19 @@ void RunAction::EndOfRunAction(const G4Run* run)
 
   // Compute dose = total energy deposit in a run and its variance
   //
-  G4double edep  = fEdep.GetValue();
-  G4double edep2 = fEdep2.GetValue();
+  G4double eqdose  = fEqDose.GetValue();
+  G4double eqdose2 = fEqDose2.GetValue();
   
-  G4double rms = edep2 - edep*edep/nofEvents;
+  G4double rms = eqdose2 - eqdose * eqdose / nofEvents;
   if (rms > 0.) rms = std::sqrt(rms); else rms = 0.;  
 
   const DetectorConstruction* detectorConstruction
    = static_cast<const DetectorConstruction*>
      (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
   G4double mass = detectorConstruction->GetScoringVolume()->GetMass();
-  G4double dose = edep/mass;
-  G4double rmsDose = rms/mass;
 
-  // Run conditions
-  //  note: There is no primary generator action object for "master"
-  //        run manager for multi-threaded mode.
+
+
   const PrimaryGeneratorAction* generatorAction
    = static_cast<const PrimaryGeneratorAction*>
      (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
@@ -140,11 +134,9 @@ void RunAction::EndOfRunAction(const G4Run* run)
   
   G4cout
      << G4endl
-     << " The run consists of " << nofEvents << " "<< runCondition
-     << G4endl
+     << " The run consists of " << nofEvents << " "<< runCondition << G4endl
      << " Cumulated dose per run, in scoring volume : " 
-     << G4BestUnit(dose,"Dose") << " rms = " << G4BestUnit(rmsDose,"Dose")
-     << G4endl
+     << G4BestUnit( eqdose, "EqDose") << " rms = " << G4BestUnit( rms, "EqDose") << G4endl
      << "------------------------------------------------------------"
      << G4endl
      << G4endl;
@@ -152,8 +144,8 @@ void RunAction::EndOfRunAction(const G4Run* run)
 
 
 
-void RunAction::AddEdep(G4double edep)
+void RunAction::AddEqDose(G4double eq_dose)
 {
-  fEdep  += edep;
-  fEdep2 += edep*edep;
+    fEqDose  += eq_dose;
+    fEqDose2 += eq_dose * eq_dose;
 }
