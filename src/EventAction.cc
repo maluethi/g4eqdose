@@ -68,7 +68,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
     auto hc = GetHitsCollection(fCollID_eqdose, evt);
 
-    hc->PrintAllHits();
 
     G4THitsMap<G4double>* evtMap =
             (G4THitsMap<G4double>*)(HCE->GetHC(fCollID_eqdose));
@@ -77,6 +76,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     std::map<G4int,G4double*>::iterator itr;
     for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) {
         eq_dose = *(itr->second);
+        G4cout << "dose" << eq_dose << G4endl;
     }
     if (eq_dose > 0.) fRunAction->AddEqDose(eq_dose);
 
