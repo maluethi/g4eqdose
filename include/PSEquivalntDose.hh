@@ -14,7 +14,7 @@ class PSEquivalntDose : public G4VPrimitiveScorer,
         public G4UImessenger {
 
 public:
-    PSEquivalntDose(G4String name, G4int depth=0);
+    PSEquivalntDose(G4String name);
     virtual ~PSEquivalntDose();
 
     virtual void Initialize(G4HCofThisEvent*);
