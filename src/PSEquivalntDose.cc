@@ -11,8 +11,8 @@
 
 class ConvCoeff;
 
-PSEquivalntDose::PSEquivalntDose(G4String name, G4int depth) :
-    G4VPrimitiveScorer(name, depth), G4UImessenger(), HCID(-1), EvtMap(0), weighted(true) {
+PSEquivalntDose::PSEquivalntDose(G4String name) :
+    G4VPrimitiveScorer(name), G4UImessenger(), HCID(-1), EvtMap(0), weighted(true) {
 
     DefineUnitAndCategory();
     SetUnit("sievert");
