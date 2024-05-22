@@ -22,10 +22,13 @@ public:
     virtual void clear();
     virtual void DrawAll();
     virtual void PrintAll();
+    virtual void SetUnit(const G4String& unit);
 
 protected:
     virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
     virtual G4double ComputeVolume(G4Step* aStep, G4int idx);
+
+    void DefineUnitAndCategory();
 
 
 private:
