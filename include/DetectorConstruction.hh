@@ -28,7 +28,7 @@ public:
     virtual void ConstructSDandField();
 
     G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
-    G4double  GetTestDx() const { return test_dxxy;}
+    G4double  GetTestDx() const { return test_dxxy/2;}
 
 private:
     void DefineMaterials();
