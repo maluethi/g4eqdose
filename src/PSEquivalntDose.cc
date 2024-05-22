@@ -6,11 +6,16 @@
 #include "G4VSolid.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VPVParameterisation.hh"
+#include "G4UnitsTable.hh"
+#include "G4SystemOfUnits.hh"
 
 class ConvCoeff;
 
 PSEquivalntDose::PSEquivalntDose(G4String name, G4int depth) :
     G4VPrimitiveScorer(name, depth), G4UImessenger(), HCID(-1), EvtMap(0), weighted(true) {
+
+    DefineUnitAndCategory();
+    SetUnit("sievert");
 
     G4String data_dir = "data/";
     G4String geometry = "AP";
@@ -67,14 +72,14 @@ G4bool PSEquivalntDose::ProcessHits(G4Step * aStep, G4TouchableHistory *) {
     G4int idx = ((G4TouchableHistory*)
             (pre_step->GetTouchable()))->GetReplicaNumber(indexDepth);
     G4double cubicVolume = ComputeVolume(aStep, idx);
-    G4double flux = stepLength / cubicVolume;
+    G4double flux = stepLength / cubicVolume * cm2;
 
-    G4double CellEqDose = flux * coeff;
+    G4double CellEqDose =  (coeff * 1E-12) * flux;
     if (weighted) CellEqDose *= pre_step->GetWeight();
     G4int index = GetIndex(aStep);
     EvtMap->add(index, CellEqDose);
 
-    //G4cout << "PDG:" << aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding() << " EqDose: " << CellEqDose << " ENE: " << pre_step->GetKineticEnergy() << " C: " << coeff  << G4endl;
+    G4cout << "PDG:" << aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding() << " EqDose: " << CellEqDose << " ENE: " << pre_step->GetKineticEnergy() << " C: " << coeff << " F: " << flux << G4endl;
 
     return TRUE;
 
@@ -108,4 +113,26 @@ G4double PSEquivalntDose::ComputeVolume(G4Step* aStep, G4int idx){
     }
 
     return solid->GetCubicVolume();
+}
+
+void PSEquivalntDose::SetUnit(const G4String& unit)
+{
+    CheckAndSetUnit(unit,"EqDose");
+}
+
+void PSEquivalntDose::DefineUnitAndCategory() {
+
+    auto sievert = 1E12 * joule / kilogram;     // TODO: In inernal units a joule is 1E-12 (MeV)
+
+    const G4double millisievert = 1.e-3 * sievert;
+    const G4double microsievert = 1.e-6 * sievert;
+    const G4double nanosievert  = 1.e-9 * sievert;
+    const G4double picosievert  = 1.e-12 * sievert;
+
+    new G4UnitDefinition("sievert", "Sv" , "EqDose", sievert);
+    new G4UnitDefinition("millisievert", "mSv" , "EqDose", millisievert);
+    new G4UnitDefinition("microsievert", "uSv" , "EqDose", microsievert);
+    new G4UnitDefinition("nanosievert" , "nSv"  , "EqDose", nanosievert);
+    new G4UnitDefinition("picosievert" , "pSv"  , "EqDose", picosievert);
+
 }
